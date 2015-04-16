@@ -1,3 +1,5 @@
 Here is a list of things we should do at some point whenever...
 
 I think standard github practice is to put this in the README - Noah
+
+got it - Eli
