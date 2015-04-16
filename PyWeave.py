@@ -19,6 +19,7 @@ class Weave:
             threading, treadling, warpColors, weftColors):
         self.colorTable = colorTable
         self.warpThreads = warpThreads
+        self.weftThreads = weftThreads
         self.tieUp = tieUp
         self.threading = threading
         self.treadling = treadling
@@ -28,41 +29,61 @@ class Weave:
     ## alternate constructor that loads .WIF file
     
     def __init__(self, fileName):
-        #try:
+        try:
             # open file and check it's a .wif
             file = open(fileName, 'r')
-            
             if file.readline().strip() != "[WIF]":
                 raise
 
-            # read through lines
-            lines = file.readlines()
-            for i in range(0, len(lines)):
+            # read through file
+            header = "[WIF]"                # stores current section header
+            for line in file.readlines():   # iterate through lines
+                line = line.strip()         # strip away whitespace
                 
-                # if line is the beginning of the color table
-                if lines[i].strip() == "[COLOR TABLE]":
-                    # fill color table
-                    self.colorTable = []
-                    for i in range(0, 10):
-                        self.colorTable.append("")
+                if line[0] == "[":          # check if line is a section header
+                    header = line
+                else:                       # otherwise process the line
+                    # process color table lines (x=xxx,xxx,xxx)
+                    if header == "[COLOR TABLE]":
+                        line = line.split("=")
+                        line[1] = line[1].split(",")
+                        self.colorTable.append(line)
                         
-                    # loop until we reach a '['
-                    j = i + 1
-                    while lines[j][0] != "[":
-                        # process line
-                        line = lines[j].strip().split("=")
-                        index = int(line[0])
-                        print(index)
-                        self.colorTable[index] = line[1].split(",")
-                        # read next line
-                        j += 1
+                    # look for warp and weft threads
+                    elif header == "[WEFT]":
+                        line = line.split("=")
+                        if line[0] == "Threads":
+                            self.weftThreads = int(line[1])
+                            
+                    elif header == "[WARP]":
+                        line = line.split("=")
+                        if line[0] == "Threads":
+                            self.warpThreads = int(line[1])
+                            
+                    # fill tieup table
+                    elif header == "[TIEUP]":
+                        line = line.split("=")
+                        line[1] = line[1].split(",")
+                        self.tieUp.append(line)
                         
-                    print(self.colorTable)
+                    # fill threading table
+                    elif header == "[THREADING]":
+                        self.threading.append(line.split("="))
                         
-            
+                    # fill treadling table
+                    elif header == "[TREADLING]":
+                        self.treadling.append(line.split("="))
+                        
+                    # fill in colors
+                    elif header == "[WARP COLORS]":
+                        self.warpColors.append(line.split("="))
+                        
+                    elif header == "[WEFT COLORS]":
+                        self.weftColors.append(line.split("="))
+                        
             file.close()
-        #except:
-        #    print("Error loading .WIF file!")
+        except:
+            print("Error loading .WIF file!")
         
     
     ## saves a bitmap image of the weave
@@ -72,7 +93,7 @@ class Weave:
     # spacing - amount of pixels to put in between each thread (default 0)
     
     def saveBitmap(self, fileName, scale = 1, spacing = 0):
-        print("Eventually this will save a bitmap!")
+        print(self)
         ###
         ## TODO
         ###
