@@ -99,8 +99,14 @@ class Weave:
     
     def saveBitmap(self, fileName, scale = 1, spacing = 0):
         print(self.threading)
+        # variable containing values to be exported as bmp
+        preImage = str([self.colorTable, self.threading, self.tieUp, self.treadling, self.warpColors, self.warpThreads, self.weftColors, self.weftThreads])
+        # opens fileName (w-writable, b-binary) as short-hand 'd'
+        with open(fileName, 'wb') as d:
+            d.write(preImage)       # saves the image as 'output.bmp'
         ###
         ## TODO
+        ## Does not utilize scale or spacing
         ###
 
 # akin to 'main' method, will only run if this specific file is run
