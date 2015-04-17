@@ -2,11 +2,11 @@ class Weave:
     
     ## data structures
     
-    colorTable = []   # for now we'll only deal with RGB values from 0 to 255,
+    colorTable = {}   # for now we'll only deal with RGB values from 0 to 255,
                       # although .WIF supports other formats
     warpThreads = 0   # let's not worry about units and spacing and whatnot yet
     weftThreads = 0
-    tieUp = []        # this would represent the top-right quandrant in WeavePoint
+    tieUp = {}        # this would represent the top-right quandrant in WeavePoint
     threading = []    # this is the top-left quandrant
     treadling = []    # and this the bottom-right quadrant
     warpColors = []   # corresponds with the color table
@@ -46,8 +46,11 @@ class Weave:
                     # process color table lines (x=xxx,xxx,xxx)
                     if header == "[COLOR TABLE]":
                         line = line.split("=")
-                        line[1] = line[1].split(",")
-                        self.colorTable.append(line)
+                        index = int(line[0])                    # convert index to int
+                        # convert every item in the color array to int
+                        color = [int(x) for x in line[1].split(",")]
+                        
+                        self.colorTable[index] = color
                         
                     # look for warp and weft threads
                     elif header == "[WEFT]":
@@ -63,16 +66,18 @@ class Weave:
                     # fill tieup table
                     elif header == "[TIEUP]":
                         line = line.split("=")
-                        line[1] = line[1].split(",")
-                        self.tieUp.append(line)
+                        index = int(line[0])
+                        # convert each item to int
+                        harnesses = [int(x) for x in line[1].split(",")]
+                        self.tieUp[index] = harnesses
                         
                     # fill threading table
                     elif header == "[THREADING]":
-                        self.threading.append(line.split("="))
+                        self.threading.append(int(line.split("=")[1]))
                         
                     # fill treadling table
                     elif header == "[TREADLING]":
-                        self.treadling.append(line.split("="))
+                        self.treadling.append(int(line.split("=")[1]))
                         
                     # fill in colors
                     elif header == "[WARP COLORS]":
@@ -93,7 +98,7 @@ class Weave:
     # spacing - amount of pixels to put in between each thread (default 0)
     
     def saveBitmap(self, fileName, scale = 1, spacing = 0):
-        print(self)
+        print(self.threading)
         ###
         ## TODO
         ###
