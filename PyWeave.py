@@ -1,3 +1,6 @@
+from PIL import Image
+import math
+
 class Weave:
     
     ## data structures
@@ -81,10 +84,10 @@ class Weave:
                         
                     # fill in colors
                     elif header == "[WARP COLORS]":
-                        self.warpColors.append(line.split("="))
+                        self.warpColors.append(int(line.split("=")[1]))
                         
                     elif header == "[WEFT COLORS]":
-                        self.weftColors.append(line.split("="))
+                        self.weftColors.append(int(line.split("=")[1]))
                         
             file.close()
         except:
@@ -98,19 +101,40 @@ class Weave:
     # spacing - amount of pixels to put in between each thread (default 0)
     
     def saveBitmap(self, fileName, scale = 1, spacing = 0):
-        print(self.threading)
-        # variable containing values to be exported as bmp
-        preImage = str([self.colorTable, self.threading, self.tieUp, self.treadling, self.warpColors, self.warpThreads, self.weftColors, self.weftThreads])
-        # opens fileName (w-writable, b-binary) as short-hand 'd'
-        with open(fileName, 'wb') as d:
-            d.write(preImage)       # saves the image as 'output.bmp'
-        ###
-        ## TODO
-        ## Does not utilize scale or spacing
-        ###
+        # step 1: generate image as string
+        # step 2: create image using PIL's fromstring method
+        
+        # initialize string buffer
+        
+        imgString = ""
+        
+        # iterate over rows and pixels
+        
+        for i in range(0, self.weftThreads * scale):
+            for j in range(0, self.warpThreads * scale):
+                weftThread = int(i / scale)
+                warpThread = int(j / scale)
+                
+                # decide if warp thread or weft thread is showing
+                
+                if self.threading[warpThread] in self.tieUp[self.treadling[weftThread]]:
+                    color = self.colorTable[self.warpColors[warpThread]]
+                else:
+                    color = self.colorTable[self.weftColors[weftThread]]
+                
+                imgString += chr(color[0]) + chr(color[1]) + chr(color[2])
+        
+        # create image from buffer
+        
+        image = Image.fromstring(
+            "RGB", (self.warpThreads * scale, self.weftThreads * scale), imgString)
+        
+        # save image
+        
+        image.save(fileName)
 
 # akin to 'main' method, will only run if this specific file is run
 if __name__ == "__main__":
     weave = Weave("test.wif")
-    weave.saveBitmap("output.bmp")
+    weave.saveBitmap("output.bmp", 10)
     
