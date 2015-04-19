@@ -45,49 +45,49 @@ class Weave:
                 
                 if line[0] == "[":          # check if line is a section header
                     header = line
-                else:                       # otherwise process the line
-                    # process color table lines (x=xxx,xxx,xxx)
-                    if header == "[COLOR TABLE]":
-                        line = line.split("=")
-                        index = int(line[0])                    # convert index to int
-                        # convert every item in the color array to int
-                        color = [int(x) for x in line[1].split(",")]
+                    
+                # process color table lines (x=xxx,xxx,xxx)
+                elif header == "[COLOR TABLE]":
+                    line = line.split("=")
+                    index = int(line[0])                    # convert index to int
+                    # convert every item in the color array to int
+                    color = [int(x) for x in line[1].split(",")]
+                    
+                    self.colorTable[index] = color
+                    
+                # look for warp and weft threads
+                elif header == "[WEFT]":
+                    line = line.split("=")
+                    if line[0] == "Threads":
+                        self.weftThreads = int(line[1])
                         
-                        self.colorTable[index] = color
+                elif header == "[WARP]":
+                    line = line.split("=")
+                    if line[0] == "Threads":
+                        self.warpThreads = int(line[1])
                         
-                    # look for warp and weft threads
-                    elif header == "[WEFT]":
-                        line = line.split("=")
-                        if line[0] == "Threads":
-                            self.weftThreads = int(line[1])
-                            
-                    elif header == "[WARP]":
-                        line = line.split("=")
-                        if line[0] == "Threads":
-                            self.warpThreads = int(line[1])
-                            
-                    # fill tieup table
-                    elif header == "[TIEUP]":
-                        line = line.split("=")
-                        index = int(line[0])
-                        # convert each item to int
-                        harnesses = [int(x) for x in line[1].split(",")]
-                        self.tieUp[index] = harnesses
-                        
-                    # fill threading table
-                    elif header == "[THREADING]":
-                        self.threading.append(int(line.split("=")[1]))
-                        
-                    # fill treadling table
-                    elif header == "[TREADLING]":
-                        self.treadling.append(int(line.split("=")[1]))
-                        
-                    # fill in colors
-                    elif header == "[WARP COLORS]":
-                        self.warpColors.append(int(line.split("=")[1]))
-                        
-                    elif header == "[WEFT COLORS]":
-                        self.weftColors.append(int(line.split("=")[1]))
+                # fill tieup table
+                elif header == "[TIEUP]":
+                    line = line.split("=")
+                    index = int(line[0])
+                    # convert each item to int
+                    harnesses = [int(x) for x in line[1].split(",")]
+                    self.tieUp[index] = harnesses
+                    
+                # fill threading table
+                elif header == "[THREADING]":
+                    self.threading.append(int(line.split("=")[1]))
+                    
+                # fill treadling table
+                elif header == "[TREADLING]":
+                    self.treadling.append(int(line.split("=")[1]))
+                    
+                # fill in colors
+                elif header == "[WARP COLORS]":
+                    self.warpColors.append(int(line.split("=")[1]))
+                    
+                elif header == "[WEFT COLORS]":
+                    self.weftColors.append(int(line.split("=")[1]))
                         
             file.close()
         except:
