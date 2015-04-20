@@ -102,7 +102,7 @@ class Weave:
     
     def saveBitmap(self, fileName, scale = 1, spacing = 0):
         # step 1: generate image as string
-        # step 2: create image using PIL's fromstring method
+        # step 2: create image using PIL's frombytes method
         
         # initialize string buffer
         
