@@ -126,7 +126,7 @@ class Weave:
         
         # create image from buffer
         
-        image = Image.fromstring(
+        image = Image.frombytes(
             "RGB", (self.warpThreads * scale, self.weftThreads * scale), imgString)
         
         # save image
