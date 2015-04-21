@@ -102,11 +102,11 @@ class Weave:
     
     def saveBitmap(self, fileName, scale = 1, spacing = 0):
         # step 1: generate image as string
-        # step 2: create image using PIL's frombytes method
+        # step 2: create image using PIL's fromstring method
         
         # initialize string buffer
         
-        imgString = ""
+        imgBuffer = []
         
         # iterate over rows and pixels
         
@@ -122,19 +122,52 @@ class Weave:
                 else:
                     color = self.colorTable[self.weftColors[weftThread]]
                 
-                imgString += chr(color[0]) + chr(color[1]) + chr(color[2])
+                imgBuffer.append(color[0])
+                imgBuffer.append(color[1])
+                imgBuffer.append(color[2])
         
         # create image from buffer
         
         image = Image.frombytes(
-            "RGB", (self.warpThreads * scale, self.weftThreads * scale), imgString)
+            "RGB",
+            (self.warpThreads * scale, self.weftThreads * scale),
+            bytes(imgBuffer)
+        )
         
         # save image
         
         image.save(fileName)
+        image.show()
+
+def fractal(weave, pattern, n):    
+    if n > 0:
+        treadling = weave.treadling
+        colors = weave.weftColors
+        weave.treadling = []
+        weave.weftColors = []
+        
+        for i in treadling:
+            for j in pattern[i]:
+                weave.treadling.append(pattern[i][j])
+                weave.weftColors.append(colors[i])
+                
+        weave.weftThreads = len(weave.treadling)
+        return fractal(weave, pattern, n - 1)
+    else:
+        return weave
+        
 
 # akin to 'main' method, will only run if this specific file is run
 if __name__ == "__main__":
+    pattern = {
+        1: [1, 2],
+        2: [1, 1],
+        3: [1, 2],
+        4: [2, 2]
+    }
+    
     weave = Weave("test.wif")
-    weave.saveBitmap("output.bmp", 10)
+    weave = fractal(weave, pattern, 2)
+    print("{0} by {1}".format(weave.warpThreads, weave.weftThreads))
+    weave.saveBitmap("output.bmp", 4)
     
