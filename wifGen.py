@@ -1,6 +1,5 @@
 # Relably creates random weaves that can be processed directly by machine-weaving pyweave
 # KNOWN ISSUES:
-#   -Can make a warp that runs out of weft, so the pattern stops half way through the image
 #   -Only has one tieup pattern hard-wired in, so the range of design is limited
 #   -Only outputs wif to terminal and does not save it to file
 
@@ -32,7 +31,11 @@ def wifGen():
     print('[WEFT]')
     # give random amount of weft threads
     threads2 = random.randint(1,100)
+    # always make sure that there are more weft threads than warp threads
+    while threads2 < threads1:
+        threads2 = random.randint(1,100)
     print('Threads='+str(threads2))
+
 
 
     # this section is 'hard-wired' in currently,
