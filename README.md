@@ -8,7 +8,7 @@ Machines can weave too
 
 ## Issues
 Newest upload of the pyweave program constantly outputs weird BMPs that look all brown and purple,
-and are super staticy 
+and are super staticy -Eli
 
 
 ### .WIF files
