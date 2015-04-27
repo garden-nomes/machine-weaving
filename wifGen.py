@@ -1,7 +1,6 @@
 # Relably creates random weaves that can be processed directly by machine-weaving pyweave
 # KNOWN ISSUES:
 #   -Only has one tieup pattern hard-wired in, so the range of design is limited
-#   -Only outputs wif to terminal and does not save it to file
 
 
 # need random values for colors and number of warps and wefts
@@ -12,59 +11,62 @@ import random
 # then there is some filler lines that produce the actual information
 
 def wifGen():
-    print('[WIF]')
-    print('[COLOR TABLE]')
+
+    file = open('testWIF.wif', 'w')
+
+    file.write('[WIF]''\n')
+    file.write('[COLOR TABLE]''\n')
 
     # assign color1 three random ints between 0 and 255
     color1 = str((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
-    print('1='+color1.strip('()').replace(' ',''))
+    file.write('1='+color1.strip('()').replace(' ','')+'\n')
 
     # assign color2 three random ints for its color
     color2 = str((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
-    print('2='+color2.strip('()').replace(' ',''))
+    file.write('2='+color2.strip('()').replace(' ','')+'\n')
 
-    print('[WARP]')
+    file.write('[WARP]''\n')
     # give a random amount of warp threads
-    threads1 = random.randint(1,100)
-    print('Threads='+str(threads1))
+    threads1 = random.randint(1,255)
+    file.write('Threads='+str(threads1)+'\n')
 
-    print('[WEFT]')
+    file.write('[WEFT]''\n')
     # give random amount of weft threads
-    threads2 = random.randint(1,100)
-    # always make sure that there are more weft threads than warp threads
+    threads2 = random.randint(1,255)
     while threads2 < threads1:
-        threads2 = random.randint(1,100)
-    print('Threads='+str(threads2))
-
+        threads2 = random.randint(1,255)
+    file.write('Threads='+str(threads2)+'\n')
 
 
     # this section is 'hard-wired' in currently,
     # but would like to be able to have this changed randomly or upon input at some point
-    print('[TIEUP]')
-    print('1=1,2')
-    print('2=2,3')
-    print('3=1,4')
-    print('4=2,3')
+    file.write('[TIEUP]''\n')
+    file.write('1=1,2''\n')
+    file.write('2=2,3''\n')
+    file.write('3=3,4''\n')
+    file.write('4=1,4''\n')
 
     # assign each thread in the warp to a tieup number
-    print('[THREADING]')
+    file.write('[THREADING]''\n')
     for x in range(threads1):
-        print(str(x)+'='+str(random.randint(1,4)))
+        file.write(str(x)+'='+str(random.randint(1,4))+'\n')
 
     # assign each thread in the weft to a tieup number
-    print('[TREADLING]')
+    file.write('[TREADLING]''\n')
     for x in range(threads2):
-        print(str(x)+'='+str(random.randint(1,4)))
+        file.write(str(x)+'='+str(random.randint(1,4))+'\n')
 
     # assign warp threads to color1
-    print('[WARP COLORS]')
+    file.write('[WARP COLORS]''\n')
     for x in range(threads1):
-        print(str(x)+'='+'1')
+        file.write(str(x)+'='+'1'+'\n')
 
     # assign weft threads to color 2
-    print('[WEFT COLORS]')
+    file.write('[WEFT COLORS]''\n')
     for x in range(threads2):
-        print(str(x)+'='+'2')
+        file.write(str(x)+'='+'2'+'\n')
+
+    file.close()
 
 #run the script
 wifGen()
