@@ -1,11 +1,7 @@
 # Relably creates random weaves that can be processed directly by machine-weaving pyweave
-# KNOWN ISSUES:
-#   -Only has one tieup pattern hard-wired in, so the range of design is limited
-
 
 # need random values for colors and number of warps and wefts
 import random
-
 
 # lots of print statements that print out the headers and whatnot
 # then there is some filler lines that produce the actual information
@@ -38,13 +34,15 @@ def wifGen():
     file.write('Threads='+str(threads2)+'\n')
 
 
-    # this section is 'hard-wired' in currently,
-    # but would like to be able to have this changed randomly or upon input at some point
     file.write('[TIEUP]''\n')
-    file.write('1=1,2''\n')
-    file.write('2=2,3''\n')
-    file.write('3=3,4''\n')
-    file.write('4=1,4''\n')
+    harness1 = (random.randint(1,4),random.randint(1,4))
+    file.write('1='+str(harness1).strip('()').replace(' ','')+'\n')
+    harness2 = (random.randint(1,4),random.randint(1,4))
+    file.write('2='+str(harness2).strip('()').replace(' ','')+'\n')
+    harness3 = (random.randint(1,4),random.randint(1,4))
+    file.write('3='+str(harness3).strip('()').replace(' ','')+'\n')
+    harness4 = (random.randint(1,4),random.randint(1,4))
+    file.write('4='+str(harness4).strip('()').replace(' ','')+'\n')
 
     # assign each thread in the warp to a tieup number
     file.write('[THREADING]''\n')
