@@ -17,9 +17,8 @@ class Weave:
 
     ## basic constructor that takes weave as arguments
 
-    def __init__(
-            self, colorTable, warpThreads, weftThreads, tieUp,
-            threading, treadling, warpColors, weftColors):
+    def __init__(self, colorTable, warpThreads, weftThreads, tieUp,
+                 threading, treadling, warpColors, weftColors):
         self.colorTable = colorTable
         self.warpThreads = warpThreads
         self.weftThreads = weftThreads
@@ -29,9 +28,20 @@ class Weave:
         self.warpColors = warpColors
         self.weftColors = weftColors
 
-    ## alternate constructor that loads .WIF file
-
-    def __init__(self, fileName):
+    ## alternate method that loads .WIF file
+    
+    @classmethod
+    def loadWIF(cls, fileName):
+        colorTable = {}   # for now we'll only deal with RGB values from 0 to 255,
+                          # although .WIF supports other formats
+        warpThreads = 0   # let's not worry about units and spacing and whatnot yet
+        weftThreads = 0
+        tieUp = {}        # this would represent the top-right quandrant in WeavePoint
+        threading = []    # this is the top-left quandrant
+        treadling = []    # and this the bottom-right quadrant
+        warpColors = []   # corresponds with the color table
+        weftColors = []
+        
         try:
             # open file and check it's a .wif
             file = open(fileName, 'r')
@@ -53,18 +63,18 @@ class Weave:
                     # convert every item in the color array to int
                     color = [int(x) for x in line[1].split(",")]
 
-                    self.colorTable[index] = color
+                    colorTable[index] = color
 
                 # look for warp and weft threads
                 elif header == "[WEFT]":
                     line = line.split("=")
                     if line[0] == "Threads":
-                        self.weftThreads = int(line[1])
+                        weftThreads = int(line[1])
 
                 elif header == "[WARP]":
                     line = line.split("=")
                     if line[0] == "Threads":
-                        self.warpThreads = int(line[1])
+                        warpThreads = int(line[1])
 
                 # fill tieup table
                 elif header == "[TIEUP]":
@@ -72,26 +82,29 @@ class Weave:
                     index = int(line[0])
                     # convert each item to int
                     harnesses = [int(x) for x in line[1].split(",")]
-                    self.tieUp[index] = harnesses
+                    tieUp[index] = harnesses
 
                 # fill threading table
                 elif header == "[THREADING]":
-                    self.threading.append(int(line.split("=")[1]))
+                    threading.append(int(line.split("=")[1]))
 
                 # fill treadling table
                 elif header == "[TREADLING]":
-                    self.treadling.append(int(line.split("=")[1]))
+                    treadling.append(int(line.split("=")[1]))
 
                 # fill in colors
                 elif header == "[WARP COLORS]":
-                    self.warpColors.append(int(line.split("=")[1]))
+                    warpColors.append(int(line.split("=")[1]))
 
                 elif header == "[WEFT COLORS]":
-                    self.weftColors.append(int(line.split("=")[1]))
+                    weftColors.append(int(line.split("=")[1]))
 
             file.close()
         except:
             print("Error loading .WIF file!")
+        
+        return cls(colorTable, warpThreads, weftThreads, tieUp,
+                   threading, treadling, weftColors, warpColors)
 
 
     ## saves a bitmap image of the weave
@@ -132,11 +145,73 @@ class Weave:
         # save image
 
         image.save(fileName)
-        #image.show()
+        image.show()
+    
+    def saveWIF(self, filename):
+        try:
+            file = open(filename, 'w')
+
+            file.write('[WIF]''\n')
+            file.write('[COLOR TABLE]''\n')
+
+            # assign color1 three random ints between 0 and 255
+            file.write('1='+str(probWeave.pickColor().strip('()').replace(' ',''))+'\n')
+
+            # assign color2 three random ints for its color
+            file.write('2='+str(probWeave.pickColor().strip('()').replace(' ',''))+'\n')
+
+            file.write('[WARP]''\n')
+            # give a random amount of warp threads
+            threads1 = random.randint(1,255)
+            file.write('Threads='+str(threads1)+'\n')
+
+            file.write('[WEFT]''\n')
+            # give random amount of weft threads
+            threads2 = random.randint(1,255)
+            while threads2 < threads1:
+                threads2 = random.randint(1,255)
+            file.write('Threads='+str(threads2)+'\n')
+
+
+            file.write('[TIEUP]''\n')
+            harness1 = (random.randint(1,2),random.randint(1,2))
+            file.write('1='+str(harness1).strip('()').replace(' ','')+'\n')
+            harness2 = (random.randint(2,3),random.randint(2,3))
+            file.write('2='+str(harness2).strip('()').replace(' ','')+'\n')
+            harness3 = (random.randint(3,4),random.randint(3,4))
+            file.write('3='+str(harness3).strip('()').replace(' ','')+'\n')
+            harness4 = (random.randint(1,4),random.randint(1,4))
+            file.write('4='+str(harness4).strip('()').replace(' ','')+'\n')
+
+            # assign each thread in the warp to a tieup number
+            file.write('[THREADING]''\n')
+            for x in range(0, threads1, 2):
+                file.write(str(x)+'='+str(random.randint(1,3))+'\n')
+            for x in range(1, threads1, 2):
+                file.write(str(x)+'='+str(random.randint(2,4))+'\n')
+
+            # assign each thread in the weft to a tieup number
+            file.write('[TREADLING]''\n')
+            for x in range(0, threads2, 2):
+                file.write(str(x)+'='+str(random.randint(1,3))+'\n')
+            for x in range(1, threads2, 2):
+                file.write(str(x)+'='+str(random.randint(2,4))+'\n')
+
+            # assign warp threads to color1
+            file.write('[WARP COLORS]''\n')
+            for x in range(threads1):
+                file.write(str(x)+'='+'1'+'\n')
+
+            # assign weft threads to color 2
+            file.write('[WEFT COLORS]''\n')
+            for x in range(threads2):
+                file.write(str(x)+'='+'2'+'\n')
+
+            file.close()
 
 # akin to 'main' method, will only run if this specific file is run
 if __name__ == "__main__":
     wifGen.wifGen()
-    weave = Weave("testWIF.wif")
+    weave = Weave.loadWIF("testWIF.wif")
     weave.saveBitmap("output.bmp", 10)
     
