@@ -6,7 +6,7 @@
 # need random values for colors and number of warps and wefts
 import random
 
-import ProbWeave
+import probWeave
 
 
 # lots of print statements that print out the headers and whatnot
@@ -22,10 +22,10 @@ def wifGen():
     file.write('[COLOR TABLE]''\n')
 
     # assign color1 three random ints between 0 and 255
-    file.write('1='+str(ProbWeave.pickColor().strip('()').replace(' ',''))+'\n')
+    file.write('1='+str(probWeave.pickColor().strip('()').replace(' ',''))+'\n')
 
     # assign color2 three random ints for its color
-    file.write('2='+str(ProbWeave.pickColor().strip('()').replace(' ',''))+'\n')
+    file.write('2='+str(probWeave.pickColor().strip('()').replace(' ',''))+'\n')
 
     file.write('[WARP]''\n')
     # give a random amount of warp threads
