@@ -187,19 +187,19 @@ class Weave:
             
             file.write("[TREADLING]\n")
             for i in range(len(self.treadling)):
-                file.write(str(i + 1) + "=" + str(self.treadling[i]))
+                file.write(str(i + 1) + "=" + str(self.treadling[i]) + "\n")
 
             # write warp colors
             
             file.write("[WARP COLORS]\n")
             for i in range(len(self.warpColors)):
-                file.write(str(i + 1) + "=" + str(self.warpColors[i]))
+                file.write(str(i + 1) + "=" + str(self.warpColors[i]) + "\n")
 
             # write weft colors
             
             file.write("[WEFT COLORS]\n")
             for i in range(len(self.weftColors)):
-                file.write(str(i + 1) + "=" + str(self.weftColors[i]))
+                file.write(str(i + 1) + "=" + str(self.weftColors[i]) + "\n")
 
             file.close()
         # except:
